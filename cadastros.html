@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastros — Checklist Oficina Nanya</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Central de Processos</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Acompanhamento</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Dashboard</button>
+        <a href="cadastros.html" class="ativo">Cadastros</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Histórico</button>
+        <button class="item-menu" id="menu-configuracoes" onclick="itemEmConstrucao(event)">Configurações</button>
+      </nav>
+      <div class="rodape-menu">
+        <button class="item-menu" onclick="sair()" style="color: #ffb3b3;">Sair</button>
+      </div>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Cadastros</h1>
+        <div class="usuario-logado">
+          <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <label class="linha-modo-teste">
+          <input type="checkbox" id="modo-teste" />
+          Modo teste (dados fictícios, sem gastar crédito nas consultas)
+        </label>
+
+        <form id="form-cadastro">
+          <!-- ---------- CLIENTE ---------- -->
+          <div class="bloco">
+            <h2>Cliente</h2>
+
+            <div class="faixa-tipo-pessoa">
+              <label><input type="radio" name="tipo-pessoa" value="PF" checked /> Pessoa Física</label>
+              <label><input type="radio" name="tipo-pessoa" value="PJ" /> Pessoa Jurídica</label>
+            </div>
+
+            <!-- Busca PF -->
+            <div class="grupo-busca" id="busca-pf">
+              <div class="campo">
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" placeholder="000.000.000-00" />
+              </div>
+              <button type="button" class="botao-secundario" id="botao-buscar-cpf">Buscar (grátis)</button>
+              <button type="button" class="botao-secundario oculto" id="botao-buscar-cpf-api">Buscar na API (R$0,12)</button>
+            </div>
+
+            <!-- Busca PJ -->
+            <div class="grupo-busca oculto" id="busca-pj">
+              <div class="campo">
+                <label for="cnpj">CNPJ</label>
+                <input type="text" id="cnpj" placeholder="00.000.000/0000-00" />
+              </div>
+              <button type="button" class="botao-secundario" id="botao-buscar-cnpj">Buscar (grátis)</button>
+              <button type="button" class="botao-secundario oculto" id="botao-buscar-cnpj-api">Buscar na API (R$0,04)</button>
+            </div>
+
+            <div class="mensagem-inline" id="mensagem-cliente"></div>
+
+            <div class="grade-campos">
+              <div class="campo largo">
+                <label for="nome" id="rotulo-nome">Nome</label>
+                <input type="text" id="nome" />
+              </div>
+
+              <div class="campo" id="campo-sexo">
+                <label for="sexo">Sexo</label>
+                <select id="sexo">
+                  <option value="">Selecione</option>
+                  <option value="M">M</option>
+                  <option value="F">F</option>
+                </select>
+              </div>
+
+              <div class="campo" id="campo-nascimento">
+                <label for="data-nascimento">Data de nascimento</label>
+                <input type="text" id="data-nascimento" readonly />
+              </div>
+
+              <div class="campo" id="campo-idade">
+                <label for="idade">Idade (calculada)</label>
+                <input type="text" id="idade" readonly />
+              </div>
+
+              <div class="campo" id="campo-nome-mae">
+                <label for="nome-mae">Nome da mãe</label>
+                <input type="text" id="nome-mae" readonly />
+              </div>
+
+              <div class="campo oculto" id="campo-nome-fantasia">
+                <label for="nome-fantasia">Nome fantasia</label>
+                <input type="text" id="nome-fantasia" readonly />
+              </div>
+
+              <div class="campo oculto" id="campo-regime">
+                <label for="regime-tributario">Regime tributário</label>
+                <input type="text" id="regime-tributario" readonly />
+              </div>
+
+              <div class="campo oculto" id="campo-situacao">
+                <label for="situacao-cadastral">Situação cadastral</label>
+                <input type="text" id="situacao-cadastral" readonly />
+              </div>
+
+              <div class="campo oculto" id="campo-inicio-atividades">
+                <label for="inicio-atividades">Início das atividades</label>
+                <input type="text" id="inicio-atividades" readonly />
+              </div>
+
+              <div class="campo">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" placeholder="(34) 90000-0000" />
+              </div>
+
+              <div class="campo">
+                <label for="email-cliente">Email</label>
+                <input type="email" id="email-cliente" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- ENDEREÇO ---------- -->
+          <div class="bloco">
+            <h2>Endereço</h2>
+
+            <div class="grupo-busca">
+              <div class="campo">
+                <label for="cep">CEP</label>
+                <input type="text" id="cep" placeholder="00000-000" />
+              </div>
+              <button type="button" class="botao-secundario" id="botao-buscar-cep">Buscar CEP</button>
+            </div>
+
+            <div class="mensagem-inline" id="mensagem-endereco"></div>
+
+            <div class="grade-campos">
+              <div class="campo largo">
+                <label for="rua">Rua</label>
+                <input type="text" id="rua" readonly />
+              </div>
+              <div class="campo">
+                <label for="numero">Número</label>
+                <input type="text" id="numero" placeholder="Ex: 123" />
+              </div>
+              <div class="campo">
+                <label for="complemento">Complemento</label>
+                <input type="text" id="complemento" />
+              </div>
+              <div class="campo">
+                <label for="bairro">Bairro</label>
+                <input type="text" id="bairro" readonly />
+              </div>
+              <div class="campo">
+                <label for="cidade">Cidade</label>
+                <input type="text" id="cidade" readonly />
+              </div>
+              <div class="campo">
+                <label for="uf">UF</label>
+                <input type="text" id="uf" readonly />
+              </div>
+              <input type="hidden" id="codigo-ibge" />
+            </div>
+          </div>
+
+          <!-- ---------- VEÍCULO ---------- -->
+          <div class="bloco">
+            <h2>Veículo</h2>
+
+            <div class="campo oculto" id="campo-veiculos-cliente">
+              <label for="select-veiculos-cliente">Veículos já cadastrados deste cliente</label>
+              <select id="select-veiculos-cliente">
+                <option value="">+ Cadastrar veículo novo</option>
+              </select>
+            </div>
+
+            <div class="grupo-busca">
+              <div class="campo">
+                <label for="placa">Placa</label>
+                <input type="text" id="placa" placeholder="ABC1D23" />
+              </div>
+              <button type="button" class="botao-secundario" id="botao-buscar-placa">Buscar (grátis)</button>
+              <button type="button" class="botao-secundario oculto" id="botao-buscar-placa-api">Buscar na API (R$0,08)</button>
+            </div>
+
+            <div class="mensagem-inline" id="mensagem-veiculo"></div>
+
+            <div class="grade-campos">
+              <div class="campo"><label for="marca">Marca</label><input type="text" id="marca" readonly /></div>
+              <div class="campo"><label for="modelo">Modelo</label><input type="text" id="modelo" readonly /></div>
+              <div class="campo"><label for="fabricante">Fabricante</label><input type="text" id="fabricante" readonly /></div>
+              <div class="campo"><label for="versao">Versão</label><input type="text" id="versao" readonly /></div>
+              <div class="campo"><label for="ano-fabricacao">Ano fabricação</label><input type="text" id="ano-fabricacao" readonly /></div>
+              <div class="campo"><label for="ano-modelo">Ano modelo</label><input type="text" id="ano-modelo" readonly /></div>
+              <div class="campo"><label for="cor">Cor</label><input type="text" id="cor" readonly /></div>
+              <div class="campo"><label for="combustivel">Combustível</label><input type="text" id="combustivel" readonly /></div>
+              <div class="campo"><label for="nacionalidade">Nacionalidade</label><input type="text" id="nacionalidade" readonly /></div>
+              <div class="campo"><label for="tipo-veiculo">Tipo</label><input type="text" id="tipo-veiculo" readonly /></div>
+              <div class="campo"><label for="chassi">Chassi</label><input type="text" id="chassi" readonly /></div>
+              <div class="campo"><label for="numero-motor">Número do motor</label><input type="text" id="numero-motor" readonly /></div>
+              <div class="campo"><label for="potencia">Potência</label><input type="text" id="potencia" readonly /></div>
+              <div class="campo"><label for="cilindradas">Cilindradas</label><input type="text" id="cilindradas" readonly /></div>
+              <div class="campo"><label for="motor-descricao">Motor</label><input type="text" id="motor-descricao" readonly /></div>
+              <div class="campo"><label for="transmissao">Transmissão</label><input type="text" id="transmissao" readonly /></div>
+              <div class="campo"><label for="uf-emplacamento">UF emplacamento</label><input type="text" id="uf-emplacamento" readonly /></div>
+              <div class="campo"><label for="cidade-emplacamento">Cidade emplacamento</label><input type="text" id="cidade-emplacamento" readonly /></div>
+              <div class="campo">
+                <label for="km">Km atual</label>
+                <input type="text" id="km" placeholder="Ex: 35000" />
+              </div>
+            </div>
+          </div>
+
+          <div class="bloco">
+            <div class="mensagem-inline" id="mensagem-salvar"></div>
+            <div class="barra-acoes">
+              <button type="submit" class="botao-primario" id="botao-salvar">Salvar cadastro</button>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/cadastros.js"></script>
+</body>
+</html>
