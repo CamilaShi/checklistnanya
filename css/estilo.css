@@ -487,11 +487,15 @@ body {
 }
 
 .campo.w-cor {
-  flex: 0 0 180px;
+  flex: 0 0 230px;
 }
 
 .campo.w-nacionalidade {
-  flex: 0 0 160px;
+  flex: 0 0 250px;
+}
+
+.campo.w-chassi {
+  flex: 0 0 190px;
 }
 
 /* Campo de busca (CPF/CNPJ/CEP/Placa) + botão de lupa lado a lado,
@@ -668,7 +672,8 @@ body {
   .campo.w-nascimento,
   .campo.w-modelo,
   .campo.w-cor,
-  .campo.w-nacionalidade {
+  .campo.w-nacionalidade,
+  .campo.w-chassi {
     flex: 1 1 100%;
   }
   .grupo-busca-inline {
