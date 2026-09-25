@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acompanhamento — Checklist Oficina Nanya</title>
+  <link rel="icon" type="image/png" href="assets/logo-nanya.png" />
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Central de Processos</a>
+        <a href="visualizar-checklist.html" class="ativo">Acompanhamento</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Dashboard</button>
+        <a href="cadastros.html">Cadastros</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Histórico</button>
+        <button class="item-menu" id="menu-configuracoes" onclick="itemEmConstrucao(event)">Configurações</button>
+      </nav>
+      <div class="rodape-menu">
+        <button class="item-menu" onclick="sair()" style="color: #ffb3b3;">Sair</button>
+      </div>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Acompanhamento</h1>
+        <div class="usuario-logado">
+          <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <!-- ---------- BUSCA DO CLIENTE ---------- -->
+        <fieldset class="grupo-cadastro">
+          <legend>Buscar Check List</legend>
+          <div class="linha-campos">
+            <div class="campo w-busca-documento">
+              <label for="busca-documento">CPF/CNPJ</label>
+              <input type="text" id="busca-documento" placeholder="Digite o CPF ou CNPJ" />
+            </div>
+            <div class="campo w-busca-nome">
+              <label for="busca-nome-cliente">Cliente já cadastrado</label>
+              <select id="busca-nome-cliente">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="campo w-busca-placa">
+              <label for="busca-placa">Placa</label>
+              <input type="text" id="busca-placa" placeholder="ABC1D23" />
+            </div>
+            <button type="button" class="botao-lupa" id="botao-buscar-cliente" title="Buscar" style="align-self: flex-end;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+          </div>
+          <div class="mensagem-inline" id="mensagem-busca"></div>
+        </fieldset>
+
+        <!-- ---------- LISTA DE OS DO CLIENTE ---------- -->
+        <fieldset class="grupo-cadastro oculto" id="secao-lista-os">
+          <legend>Check Lists de <span id="nome-cliente-encontrado"></span></legend>
+          <div id="lista-os"></div>
+        </fieldset>
+
+        <!-- ---------- LAYOUT COMPLETO DO CHECK LIST (só leitura) ---------- -->
+        <div class="oculto" id="secao-visualizacao">
+          <button type="button" class="botao-secundario" id="botao-voltar-lista" style="margin-bottom: 12px;">&larr; Voltar pra lista</button>
+
+          <fieldset class="grupo-cadastro">
+            <legend>Cliente / Veículo</legend>
+
+            <div class="linha-campos">
+              <div class="campo w-data"><label>Data</label><input type="text" id="v-data" readonly /></div>
+              <div class="campo w-hora"><label>Hora</label><input type="text" id="v-hora" readonly /></div>
+              <div class="campo w-atendente"><label>Atendente</label><input type="text" id="v-atendente" readonly /></div>
+              <div class="campo w-os"><label>OS</label><input type="text" id="v-os" readonly /></div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo w-codigo"><label>CPF/CNPJ</label><input type="text" id="v-documento" readonly /></div>
+              <div class="campo w-nome-linha"><label>Nome</label><input type="text" id="v-nome" readonly /></div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo w-data-nascimento"><label>Data Nascimento</label><input type="text" id="v-nascimento" readonly /></div>
+              <div class="campo w-telefone"><label>Celular</label><input type="text" id="v-telefone" readonly /></div>
+              <div class="campo w-email"><label>Email</label><input type="text" id="v-email" readonly /></div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo w-cheio"><label>Endereço</label><input type="text" id="v-endereco" readonly /></div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo w-codigo-curto"><label>Placa</label><input type="text" id="v-placa" readonly /></div>
+              <div class="campo w-km"><label>Km atual</label><input type="text" id="v-km" readonly /></div>
+              <div class="campo w-medio"><label>Marca</label><input type="text" id="v-marca" readonly /></div>
+              <div class="campo w-modelo"><label>Modelo</label><input type="text" id="v-modelo" readonly /></div>
+              <div class="campo w-estreito"><label>Ano</label><input type="text" id="v-ano" readonly /></div>
+              <div class="campo w-combustivel"><label>Combustível</label><input type="text" id="v-combustivel" readonly /></div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo w-cheio">
+                <label>Nível do Combustível</label>
+                <div class="faixa-nivel-combustivel" id="v-nivel-combustivel"></div>
+              </div>
+            </div>
+
+            <div class="linha-campos">
+              <div class="campo"><label>Cliente</label><input type="text" id="v-cliente-presente" readonly /></div>
+            </div>
+          </fieldset>
+
+          <!-- ---------- ACESSÓRIOS ---------- -->
+          <fieldset class="grupo-cadastro">
+            <legend>Acessórios</legend>
+            <div class="lista-checklist" id="v-lista-acessorios"></div>
+            <div class="campo w-cheio" style="margin-top: 8px;">
+              <label>Observação geral (Acessórios)</label>
+              <input type="text" id="v-observacao-acessorios" readonly />
+            </div>
+          </fieldset>
+
+          <!-- ---------- ITENS TÉCNICOS ---------- -->
+          <fieldset class="grupo-cadastro">
+            <legend>Itens Técnicos</legend>
+            <div class="linha-campos">
+              <div class="campo"><label>Km última troca de óleo</label><input type="text" id="v-km-oleo" readonly /></div>
+              <div class="campo"><label>Data última troca de óleo</label><input type="text" id="v-data-oleo" readonly /></div>
+            </div>
+            <div class="lista-checklist" id="v-lista-tecnicos"></div>
+            <div class="campo w-cheio" style="margin-top: 8px;">
+              <label>Observação geral (Itens Técnicos)</label>
+              <input type="text" id="v-observacao-tecnicos" readonly />
+            </div>
+          </fieldset>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/visualizar-checklist.js"></script>
+</body>
+</html>
