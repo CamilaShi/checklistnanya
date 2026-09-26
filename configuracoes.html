@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Configurações — Checklist Oficina Nanya</title>
+  <link rel="icon" type="image/png" href="assets/logo-nanya.png" />
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Criar Check List</a>
+        <a href="acompanhamento.html">Status</a>
+        <a href="visualizar-checklist.html">Visualizar</a>
+        <a href="cadastros.html">Cadastro</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Dashboard</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Histórico</button>
+        <a href="configuracoes.html" class="ativo" id="menu-configuracoes">Configurações</a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Configurações</h1>
+        <div class="acoes-topo">
+          <div class="usuario-logado">
+            <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+          </div>
+          <button type="button" class="botao-primario botao-topo botao-secundario-topo" onclick="abrirModalSenha()">Alterar senha</button>
+          <button type="button" class="botao-primario botao-topo" onclick="sair()">Sair</button>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <!-- ---------- CADASTRAR USUÁRIO NOVO ---------- -->
+        <fieldset class="grupo-cadastro">
+          <legend>Cadastrar usuário</legend>
+          <div class="linha-campos">
+            <div class="campo w-nome-linha">
+              <label for="novo-nome">Nome</label>
+              <input type="text" id="novo-nome" />
+            </div>
+            <div class="campo w-busca-nome">
+              <label for="novo-email">Email</label>
+              <input type="email" id="novo-email" placeholder="nome@nanya.com.br" />
+            </div>
+          </div>
+          <div class="linha-campos">
+            <div class="campo w-busca-documento">
+              <label for="novo-senha">Senha</label>
+              <input type="password" id="novo-senha" />
+            </div>
+            <div class="campo w-sexo">
+              <label for="novo-perfil">Perfil</label>
+              <select id="novo-perfil">
+                <option value="Vendedor">Vendedor</option>
+                <option value="Oficina">Oficina</option>
+                <option value="Coordenador">Coordenador</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="mensagem-inline" id="mensagem-novo-usuario"></div>
+          <button type="button" class="botao-primario" id="botao-criar-usuario" style="width: auto; padding: 8px 24px; margin-top: 6px;">Cadastrar</button>
+        </fieldset>
+
+        <!-- ---------- LISTA DE USUÁRIOS ---------- -->
+        <fieldset class="grupo-cadastro">
+          <legend>Usuários cadastrados</legend>
+          <div id="lista-usuarios">
+            <p class="aviso">Carregando...</p>
+          </div>
+        </fieldset>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/configuracoes.js"></script>
+</body>
+</html>
