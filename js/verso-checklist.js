@@ -98,18 +98,20 @@ async function abrirVersoChecklist(idOS) {
 function criarLinhaVerso(item) {
   const tr = document.createElement("tr");
 
-  const campos = [
+  const camposAntesDoTotal = [
     { chave: "referencia", numerica: false },
     { chave: "descricao_produto", numerica: false },
     { chave: "qtde", numerica: true },
     { chave: "valor_produto", numerica: true },
+  ];
+  const camposDepoisDoTotal = [
     { chave: "descricao_servico", numerica: false },
     { chave: "executante", numerica: false },
     { chave: "valor_servico", numerica: true },
     { chave: "obs", numerica: false },
   ];
 
-  campos.forEach(function (campo) {
+  function criarCampo(campo) {
     const td = document.createElement("td");
     if (campo.numerica) td.classList.add("col-numerica");
     const input = document.createElement("input");
@@ -117,12 +119,29 @@ function criarLinhaVerso(item) {
     input.dataset.campo = campo.chave;
     input.value = (item && item[campo.chave]) || "";
     input.disabled = versoChecklistBloqueado;
-    if (campo.chave === "valor_produto" || campo.chave === "valor_servico") {
-      input.addEventListener("input", recalcularTotaisVerso);
+    if (campo.chave === "valor_produto" || campo.chave === "valor_servico" || campo.chave === "qtde") {
+      input.addEventListener("input", function () {
+        atualizarTotalLinhaVerso(tr);
+        recalcularTotaisVerso();
+      });
     }
     td.appendChild(input);
     tr.appendChild(td);
-  });
+  }
+
+  camposAntesDoTotal.forEach(criarCampo);
+
+  // Total da linha (Qtde × Valor do produto) — só leitura, calculado
+  // sozinho conforme a Qtde e o Valor são preenchidos.
+  const tdTotal = document.createElement("td");
+  tdTotal.className = "col-numerica col-total-linha";
+  const spanTotal = document.createElement("span");
+  spanTotal.className = "total-linha-verso";
+  spanTotal.textContent = "R$ 0,00";
+  tdTotal.appendChild(spanTotal);
+  tr.appendChild(tdTotal);
+
+  camposDepoisDoTotal.forEach(criarCampo);
 
   const tdRemover = document.createElement("td");
   tdRemover.className = "col-remover";
@@ -139,7 +158,23 @@ function criarLinhaVerso(item) {
   tdRemover.appendChild(botaoRemover);
   tr.appendChild(tdRemover);
 
+  atualizarTotalLinhaVerso(tr);
+
   return tr;
+}
+
+// Recalcula e mostra o total dessa linha (Qtde × Valor do produto).
+function atualizarTotalLinhaVerso(tr) {
+  const spanTotal = tr.querySelector(".total-linha-verso");
+  if (!spanTotal) return;
+  const inputQtde = tr.querySelector('input[data-campo="qtde"]');
+  const inputProduto = tr.querySelector('input[data-campo="valor_produto"]');
+  if (!inputProduto || !inputProduto.value.trim()) {
+    spanTotal.textContent = "R$ 0,00";
+    return;
+  }
+  const qtde = inputQtde ? converterQtdeVerso(inputQtde.value) : 1;
+  spanTotal.textContent = formatarMoedaVerso(qtde * converterValorMoedaVerso(inputProduto.value));
 }
 
 // Aceita "1.234,56", "1234,56" ou "1234.56" e devolve número.
@@ -159,13 +194,29 @@ function formatarMoedaVerso(numero) {
   return "R$ " + numero.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// Qtde vazia conta como 1 (uma unidade) — assim uma linha só com
+// Valor preenchido, sem quantidade, ainda entra certo no total.
+function converterQtdeVerso(texto) {
+  if (!texto || !String(texto).trim()) return 1;
+  const numero = converterValorMoedaVerso(texto);
+  return numero > 0 ? numero : 1;
+}
+
+// O Valor do Produto é o valor unitário digitado — o total dessa
+// coluna é sempre Qtde × Valor, calculado automaticamente linha por
+// linha. O Valor do Serviço não tem coluna de quantidade própria, então
+// entra direto no total dele.
 function recalcularTotaisVerso() {
   let totalProduto = 0;
   let totalServico = 0;
   document.querySelectorAll("#corpo-tabela-verso tr").forEach(function (tr) {
+    const inputQtde = tr.querySelector('input[data-campo="qtde"]');
     const inputProduto = tr.querySelector('input[data-campo="valor_produto"]');
     const inputServico = tr.querySelector('input[data-campo="valor_servico"]');
-    if (inputProduto) totalProduto += converterValorMoedaVerso(inputProduto.value);
+    if (inputProduto && inputProduto.value.trim()) {
+      const qtde = inputQtde ? converterQtdeVerso(inputQtde.value) : 1;
+      totalProduto += qtde * converterValorMoedaVerso(inputProduto.value);
+    }
     if (inputServico) totalServico += converterValorMoedaVerso(inputServico.value);
   });
   const elProduto = document.getElementById("total-valor-produto");
