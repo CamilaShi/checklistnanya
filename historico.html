@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Histórico — Checklist Oficina Nanya</title>
+  <link rel="icon" type="image/png" href="assets/logo-nanya.png" />
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Criar Check List</a>
+        <a href="acompanhamento.html">Status</a>
+        <a href="visualizar-checklist.html">Visualizar</a>
+        <a href="cadastros.html">Cadastro</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Dashboard</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <a href="historico.html" class="ativo">Histórico</a>
+        <a href="configuracoes.html" id="menu-configuracoes">Configurações</a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Histórico</h1>
+        <div class="acoes-topo">
+          <div class="usuario-logado">
+            <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+          </div>
+          <button type="button" class="botao-primario botao-topo botao-secundario-topo" onclick="abrirModalSenha()">Alterar senha</button>
+          <button type="button" class="botao-primario botao-topo" onclick="sair()">Sair</button>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <!-- ---------- BUSCA POR VEÍCULO OU CLIENTE ---------- -->
+        <div class="bloco">
+          <h2>Histórico por veículo, cliente ou período</h2>
+          <fieldset class="grupo-cadastro">
+            <legend>Buscar</legend>
+            <div class="linha-campos">
+              <div class="campo w-busca-placa">
+                <label for="historico-placa">Placa</label>
+                <select id="historico-placa">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div class="campo w-busca-cliente">
+                <label for="historico-cliente">Cliente</label>
+                <select id="historico-cliente">
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="linha-campos linha-periodo-historico">
+              <div class="campo w-estreito">
+                <label for="historico-ano">Ano</label>
+                <select id="historico-ano">
+                  <option value="">—</option>
+                </select>
+              </div>
+              <div class="campo w-data">
+                <label for="historico-data-inicial">De</label>
+                <input type="date" id="historico-data-inicial" />
+              </div>
+              <div class="campo w-data">
+                <label for="historico-data-final">Até</label>
+                <input type="date" id="historico-data-final" />
+              </div>
+              <button type="button" class="botao-secundario botao-lupa" id="botao-buscar-historico" title="Buscar" aria-label="Buscar"><svg class="icone-lupa" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+            </div>
+            <div class="aviso dica-periodo-historico">Placa, cliente e período são opcionais e se combinam. Só a data inicial = aquele dia; inicial e final = o período; só o ano = o ano todo.</div>
+
+            <div class="mensagem-inline" id="mensagem-busca-historico"></div>
+          </fieldset>
+
+          <div class="resumo-filtro-historico oculto" id="resumo-filtro-historico">
+            <div class="cartoes-resumo-historico compacto">
+              <div class="cartao-resumo-historico">
+                <div class="numero-resumo-historico" id="rf-clientes">—</div>
+                <div class="rotulo-resumo-historico">Clientes atendidos</div>
+              </div>
+              <div class="cartao-resumo-historico">
+                <div class="numero-resumo-historico" id="rf-veiculos">—</div>
+                <div class="rotulo-resumo-historico">Veículos atendidos</div>
+              </div>
+              <div class="cartao-resumo-historico">
+                <div class="numero-resumo-historico" id="rf-atendimentos">—</div>
+                <div class="rotulo-resumo-historico">Check Lists realizados</div>
+              </div>
+              <div class="cartao-resumo-historico">
+                <div class="numero-resumo-historico" id="rf-valor">—</div>
+                <div class="rotulo-resumo-historico">Valor total</div>
+              </div>
+            </div>
+            <div class="linha-status-pdf">
+              <div class="faixa-badges-status" id="faixa-status-filtro"></div>
+              <button type="button" class="botao-secundario botao-salvar-pdf" id="botao-pdf-resultado">Salvar em PDF</button>
+            </div>
+            <div class="mensagem-inline" id="mensagem-pdf-resultado"></div>
+          </div>
+        </div>
+
+        <!-- ---------- RESULTADO ---------- -->
+        <div class="bloco oculto" id="secao-resultado-historico">
+          <h2 id="titulo-resultado-historico">Resultado</h2>
+          <div id="lista-resultado-historico"></div>
+          <div id="valor-total-resultado" class="linha-valor-total-historico"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/historico.js"></script>
+</body>
+</html>
