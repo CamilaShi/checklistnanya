@@ -2132,3 +2132,61 @@ table.tabela-verso td.col-remover {
   font-weight: 600;
 }
 
+
+/* ---------- Dashboard ---------- */
+.dash-filtros { padding: 16px 20px; }
+.dash-filtros .linha-campos { align-items: flex-end; }
+.dash-atalhos { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.dash-atalho {
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 6px 12px; border-radius: 999px; border: 0;
+  background: #E9ECF1; color: var(--azul);
+}
+.dash-atalho.ativo { background: var(--azul); color: var(--branco); }
+.dash-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.dash-kpi { background: var(--branco); border: 1px solid #D9DEE7; border-radius: 10px; padding: 14px 16px; border-top: 4px solid var(--azul); }
+.dash-kpi.c2, .dash-kpi.c6 { border-top-color: var(--ciano); }
+.dash-kpi.c3 { border-top-color: var(--laranja); }
+.dash-kpi.c4 { border-top-color: var(--roxo); }
+.dash-kpi-rotulo { font-size: 11px; font-weight: 700; color: var(--texto-claro); text-transform: uppercase; letter-spacing: .4px; }
+.dash-kpi-valor { font-size: 28px; font-weight: 700; color: var(--azul); margin: 6px 0 2px; }
+.dash-delta { font-size: 12px; color: var(--texto-claro); }
+.dash-delta b.bom { color: #1E7B3A; }
+.dash-delta b.ruim { color: var(--erro); }
+.dash-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+.dash-cartao { background: var(--branco); border: 1px solid #D9DEE7; border-radius: 10px; padding: 16px; min-width: 0; }
+.dash-cartao.dobro { grid-column: span 2; }
+.dash-cartao.inteiro { grid-column: 1 / -1; }
+.dash-cartao h2 { margin: 0 0 4px; font-size: 15px; color: var(--azul); }
+.dash-sub { font-size: 12px; color: var(--texto-claro); margin-bottom: 12px; }
+.dash-vazio { font-size: 13px; color: var(--texto-claro); padding: 16px 0; }
+.dash-linha-barra { display: flex; align-items: center; gap: 10px; margin: 9px 0; font-size: 13px; }
+.dash-nome { flex: 0 0 150px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dash-trilho { flex: 1; height: 14px; background: #E9ECF1; border-radius: 7px; overflow: hidden; }
+.dash-trilho span { display: block; height: 100%; border-radius: 7px; }
+.dash-num { flex: 0 0 auto; min-width: 70px; text-align: right; font-weight: 700; color: var(--azul); }
+.dash-sec { font-size: 11px; color: var(--texto-claro); font-weight: 400; }
+.dash-rank { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #E9ECF1; font-size: 13px; }
+.dash-rank:last-child { border-bottom: 0; }
+.dash-pos { flex: 0 0 24px; height: 24px; border-radius: 50%; background: #E9ECF1; color: var(--azul); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.dash-rank-nome { flex: 1; min-width: 0; }
+.dash-rank-num { flex: 0 0 auto; min-width: 70px; text-align: right; font-weight: 700; color: var(--azul); }
+.dash-trilho-mini { flex: 0 0 90px; height: 10px; background: #E9ECF1; border-radius: 5px; overflow: hidden; }
+.dash-trilho-mini span { display: block; height: 100%; background: var(--azul); border-radius: 5px; }
+.dash-duas-colunas { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); column-gap: 32px; }
+.dash-rosca { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.dash-legenda { display: flex; flex-direction: column; gap: 7px; font-size: 13px; }
+.dash-legenda i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 8px; }
+.dash-rolagem { overflow-x: auto; }
+.dash-tabela { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.dash-tabela th { background: #E9ECF1; color: var(--azul); text-align: left; padding: 7px 8px; font-size: 11px; text-transform: uppercase; }
+.dash-tabela td { padding: 8px; border-bottom: 1px solid #E9ECF1; vertical-align: middle; }
+.dash-tabela .dir { text-align: right; }
+.dash-tabela tr.total td { font-weight: 700; border-bottom: 0; }
+.dash-tabela .dash-linha-barra { margin: 0; }
+.dash-selo { font-weight: 700; }
+.dash-nota { font-size: 12px; color: var(--texto-claro); margin-top: 14px; }
+@media (max-width: 760px) {
+  .dash-cartao.dobro { grid-column: 1 / -1; }
+  .dash-duas-colunas { grid-template-columns: 1fr; }
+}

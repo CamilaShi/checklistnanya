@@ -6,6 +6,8 @@ if (usuario) {
   if (usuario.perfil !== "Admin" && usuario.perfil !== "Coordenador") {
     const itemConfig = document.getElementById("menu-configuracoes");
     if (itemConfig) itemConfig.style.display = "none";
+    const itemDashboard = document.getElementById("menu-dashboard");
+    if (itemDashboard) itemDashboard.style.display = "none";
   }
   carregarDropdownClientes();
 }
