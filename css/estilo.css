@@ -2201,3 +2201,22 @@ table.tabela-verso td.col-remover {
   .dash-cartao.dobro { grid-column: 1 / -1; }
   .dash-duas-colunas { grid-template-columns: 1fr; }
 }
+
+/* Linha com título separando os blocos Cliente / Endereço / Veículo. */
+.separador-bloco {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 10px;
+  color: var(--azul, #003a8c);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.separador-bloco::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #c9d3e3;
+}
