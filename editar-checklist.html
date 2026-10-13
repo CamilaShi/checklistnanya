@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Editar Check List — Checklist Oficina Nanya</title>
+  <link rel="icon" type="image/png" href="assets/logo-nanya.png" />
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Criar Check List</a>
+        <a href="acompanhamento.html">Status</a>
+        <a href="visualizar-checklist.html">Visualizar</a>
+        <a href="cadastros.html">Cadastro</a>
+        <a href="dashboard.html" id="menu-dashboard">Dashboard</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <a href="historico.html">Histórico</a>
+        <a href="configuracoes.html" id="menu-configuracoes">Configurações</a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Editar Check List (Parte 1)</h1>
+        <div class="acoes-topo">
+          <div class="usuario-logado">
+            <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+          </div>
+          <button type="button" class="botao-primario botao-topo botao-secundario-topo" onclick="abrirModalSenha()">Alterar senha</button>
+          <button type="button" class="botao-primario botao-topo" onclick="sair()">Sair</button>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <form id="form-checklist">
+          <fieldset class="grupo-cadastro">
+            <legend id="titulo-os">Editar Check List</legend>
+            <p><strong>Cliente:</strong> <span id="resumo-cliente">—</span></p>
+            <p><strong>Veículo:</strong> <span id="resumo-veiculo">—</span></p>
+            <div class="linha-campos">
+              <div class="campo w-medio"><label for="km-veiculo">Km do veículo</label><input type="text" id="km-veiculo" inputmode="numeric" /></div>
+            </div>
+            <div class="linha-campos">
+              <div class="campo w-cheio">
+                <label>Nível do Combustível</label>
+                <div class="faixa-nivel-combustivel">
+                  <label><input type="radio" name="nivel-combustivel" value="0" /> 0</label>
+                  <label><input type="radio" name="nivel-combustivel" value="1/4" /> 1/4</label>
+                  <label><input type="radio" name="nivel-combustivel" value="1/2" /> 1/2</label>
+                  <label><input type="radio" name="nivel-combustivel" value="3/4" /> 3/4</label>
+                  <label><input type="radio" name="nivel-combustivel" value="1" /> 1</label>
+                </div>
+              </div>
+            </div>
+            <div class="linha-campos">
+              <div class="faixa-presenca">
+                <label><input type="radio" name="cliente-presente" value="Sim" /> Cliente presente</label>
+                <label><input type="radio" name="cliente-presente" value="Não" /> Cliente ausente</label>
+              </div>
+            </div>
+            <p class="aviso">Cliente, veículo e fotos não são alterados por aqui.</p>
+          </fieldset>
+
+          <!-- ---------- SOLICITAÇÕES DO CLIENTE ---------- -->
+          <fieldset class="grupo-cadastro">
+            <legend>Solicitações do Cliente *</legend>
+            <div id="lista-solicitacoes"></div>
+            <button type="button" class="botao-secundario" id="botao-add-solicitacao">+ Adicionar solicitação</button>
+          </fieldset>
+
+          <!-- ---------- ACESSÓRIOS ---------- -->
+          <fieldset class="grupo-cadastro">
+            <legend>Acessórios</legend>
+            <div class="lista-checklist" id="lista-acessorios">
+              <p class="aviso">Carregando itens...</p>
+            </div>
+            <div class="campo w-cheio">
+              <label for="observacao-acessorios">Observação geral (Acessórios)</label>
+              <input type="text" id="observacao-acessorios" placeholder="Observação opcional sobre os acessórios" />
+            </div>
+          </fieldset>
+
+          <!-- ---------- ITENS TÉCNICOS ---------- -->
+          <fieldset class="grupo-cadastro">
+            <legend>Itens Técnicos</legend>
+            <div class="lista-checklist" id="lista-tecnicos">
+              <p class="aviso">Carregando itens...</p>
+            </div>
+            <div class="campo w-cheio">
+              <label for="observacao-tecnicos">Observação geral (Itens Técnicos)</label>
+              <input type="text" id="observacao-tecnicos" placeholder="Observação opcional sobre os itens técnicos" />
+            </div>
+          </fieldset>
+
+          
+          <div class="caixa-salvar">
+            <div class="mensagem-inline" id="mensagem-salvar"></div>
+            <div class="barra-acoes">
+              <button type="submit" class="botao-primario" id="botao-salvar">Salvar alterações</button>
+              <button type="button" class="botao-secundario oculto" id="botao-voltar-os">Voltar ao Check List</button>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/editar-checklist.js"></script>
+</body>
+</html>
