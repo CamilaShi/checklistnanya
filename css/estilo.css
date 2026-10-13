@@ -2220,3 +2220,12 @@ table.tabela-verso td.col-remover {
   height: 1px;
   background: #c9d3e3;
 }
+
+/* Botão laranja compacto, padrão das telas de Configurações. */
+.botao-primario.botao-compacto {
+  display: block;
+  width: auto;
+  padding: 6px 16px;
+  font-size: 14px;
+  margin-top: 10px;
+}

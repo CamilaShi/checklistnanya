@@ -296,7 +296,7 @@ async function montarTelaPermissoes() {
     '<p class="texto-ajuda">Marque o que cada perfil pode fazer. O Admin sempre pode tudo. ' +
     "As regras valem no servidor, não só nos botões.</p>" +
     '<div id="matriz-permissoes" style="overflow-x:auto"><p>Carregando…</p></div>' +
-    '<button type="button" id="botao-salvar-permissoes" class="botao-primario" style="width:auto;padding:8px 24px;margin-top:10px">Salvar permissões</button>';
+    '<button type="button" id="botao-salvar-permissoes" class="botao-primario botao-compacto">Salvar permissões</button>';
   ancora.parentNode.insertBefore(caixa, ancora);
 
   let dados;
@@ -374,7 +374,7 @@ async function montarTelaMensagemWhatsApp() {
     '<p style="margin:0 0 10px"><b>{nome}</b> primeiro nome do cliente &nbsp; <b>{os}</b> número da OS &nbsp; <b>{link}</b> link do PDF (obrigatório) &nbsp; <b>{placa}</b> placa</p>' +
     '<textarea id="texto-mensagem-whatsapp" rows="5" style="width:100%;padding:8px;font:inherit"></textarea>' +
     '<div class="mensagem-inline" id="previa-mensagem-whatsapp" style="margin-top:10px"></div>' +
-    '<button type="button" class="botao-primario" id="botao-salvar-mensagem-whatsapp" style="display:block;width:auto;padding:6px 16px;font-size:14px;margin-top:10px">Salvar mensagem</button>' +
+    '<button type="button" class="botao-primario botao-compacto" id="botao-salvar-mensagem-whatsapp">Salvar mensagem</button>' +
     '<button type="button" class="botao-secundario" id="botao-padrao-mensagem-whatsapp" style="display:block;margin-top:8px">Voltar ao texto original</button>';
   ultimo.parentNode.appendChild(caixa);
 
