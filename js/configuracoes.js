@@ -15,7 +15,7 @@ if (usuario) {
       if (opcaoAdmin) opcaoAdmin.remove();
     }
     carregarUsuarios();
-    if (usuario.perfil === "Admin") montarTelaPermissoes();
+    if (usuario.perfil === "Admin") { montarTelaPermissoes(); montarTelaMensagemWhatsApp(); }
   }
 }
 
@@ -349,6 +349,76 @@ async function montarTelaPermissoes() {
       }
     } catch (erro) {
       avisarListaUsuarios("Não foi possível salvar as permissões agora.", true);
+    } finally {
+      botao.disabled = false;
+    }
+  });
+}
+
+
+// ---------------------------------------------------------------
+// Mensagem padrão do WhatsApp (só Admin) — texto enviado ao cliente
+// junto com o link do PDF do orçamento.
+// ---------------------------------------------------------------
+async function montarTelaMensagemWhatsApp() {
+  const fieldsets = document.querySelectorAll("fieldset.grupo-cadastro");
+  const ultimo = fieldsets[fieldsets.length - 1];
+  if (!ultimo || document.getElementById("grupo-mensagem-whatsapp")) return;
+
+  const caixa = document.createElement("fieldset");
+  caixa.className = "grupo-cadastro";
+  caixa.id = "grupo-mensagem-whatsapp";
+  caixa.innerHTML =
+    "<legend>Mensagem do WhatsApp (orçamento)</legend>" +
+    '<p style="margin:0 0 6px">Texto enviado ao cliente junto com o link do PDF. Campos trocados automaticamente:</p>' +
+    '<p style="margin:0 0 10px"><b>{nome}</b> primeiro nome do cliente &nbsp; <b>{os}</b> número da OS &nbsp; <b>{link}</b> link do PDF (obrigatório) &nbsp; <b>{placa}</b> placa</p>' +
+    '<textarea id="texto-mensagem-whatsapp" rows="5" style="width:100%;padding:8px;font:inherit"></textarea>' +
+    '<div class="mensagem-inline" id="previa-mensagem-whatsapp" style="margin-top:10px"></div>' +
+    '<button type="button" class="botao-primario" id="botao-salvar-mensagem-whatsapp" style="display:block;width:auto;padding:6px 16px;font-size:14px;margin-top:10px">Salvar mensagem</button>' +
+    '<button type="button" class="botao-secundario" id="botao-padrao-mensagem-whatsapp" style="display:block;margin-top:8px">Voltar ao texto original</button>';
+  ultimo.parentNode.appendChild(caixa);
+
+  const area = document.getElementById("texto-mensagem-whatsapp");
+  let padrao = "";
+
+  function atualizarPrevia() {
+    const texto = area.value
+      .replace(/\{nome\}/g, "Maria").replace(/\{os\}/g, "OS0123")
+      .replace(/\{link\}/g, "https://drive.google.com/file/d/…/view").replace(/\{placa\}/g, "ABC1D23");
+    const previa = document.getElementById("previa-mensagem-whatsapp");
+    previa.innerHTML = "<b>Prévia:</b><br>";
+    previa.appendChild(document.createTextNode(texto));
+    previa.style.whiteSpace = "pre-wrap";
+  }
+  area.addEventListener("input", atualizarPrevia);
+
+  try {
+    const r = await chamarApi({ acao: "obterMensagemWhatsApp" });
+    if (!r.sucesso) throw new Error(r.mensagem);
+    area.value = r.mensagem;
+    padrao = r.padrao;
+    atualizarPrevia();
+  } catch (erro) {
+    area.value = "";
+    area.disabled = true;
+    document.getElementById("previa-mensagem-whatsapp").textContent = "Não foi possível carregar a mensagem agora.";
+    return;
+  }
+
+  document.getElementById("botao-padrao-mensagem-whatsapp").addEventListener("click", function () {
+    area.value = padrao;
+    atualizarPrevia();
+  });
+
+  document.getElementById("botao-salvar-mensagem-whatsapp").addEventListener("click", async function () {
+    const botao = this;
+    botao.disabled = true;
+    try {
+      const r = await chamarApi({ acao: "salvarMensagemWhatsApp", mensagem: area.value });
+      if (r.sucesso) avisarListaUsuarios("Salvo: mensagem do WhatsApp atualizada.", false);
+      else avisarListaUsuarios(r.mensagem || "Não foi possível salvar a mensagem.", true);
+    } catch (erro) {
+      avisarListaUsuarios("Não foi possível salvar a mensagem agora.", true);
     } finally {
       botao.disabled = false;
     }
