@@ -240,6 +240,8 @@ function coletarItensVerso() {
 }
 
 function aplicarBloqueioVerso(bloqueado) {
+  // Sem a permissão "editar verso" a tela fica só para leitura.
+  bloqueado = bloqueado || !podeFazer("editar_verso");
   versoChecklistBloqueado = bloqueado;
   document.querySelectorAll("#corpo-tabela-verso input, #corpo-tabela-verso .botao-remover-linha-verso").forEach(function (el) {
     el.disabled = bloqueado;

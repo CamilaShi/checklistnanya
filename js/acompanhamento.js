@@ -244,6 +244,11 @@ function moverCardVisualmente(idOS, novoStatus) {
 }
 
 async function moverCardParaStatus(idOS, novoStatus) {
+  if (!podeFazer("mudar_status")) {
+    alert("Seu perfil não tem permissão para mudar o status.");
+    carregarQuadro();
+    return;
+  }
   if (novoStatus === "Finalizado") {
     if (!window.confirm("Deseja finalizar esta OS? Depois de finalizada, o verso (peças e serviços) não poderá mais ser editado.")) {
       return; // usuário cancelou — não move o card nem muda nada
@@ -254,6 +259,7 @@ async function moverCardParaStatus(idOS, novoStatus) {
   try {
     const resposta = await chamarApi({ acao: "atualizarStatusOS", id_os: idOS, novo_status: novoStatus });
     if (!resposta.sucesso) {
+      if (resposta.sem_permissao) alert(resposta.mensagem || "Sem permissão para mudar o status.");
       carregarQuadro(); // não salvou de verdade — desfaz recarregando do zero
       return;
     }

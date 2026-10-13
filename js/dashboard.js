@@ -6,7 +6,7 @@ if (usuario) {
   document.getElementById("nome-usuario").textContent = usuario.nome;
   document.getElementById("perfil-usuario").textContent = usuario.perfil;
 
-  if (PERFIS_DASHBOARD.indexOf(usuario.perfil) === -1) {
+  if (!podeFazer("ver_dashboard")) {
     // Quem não tem acesso volta pro início; o backend também recusa.
     window.location.href = "home.html";
   } else {
@@ -371,6 +371,19 @@ function desenharDashboard(r) {
         r.sexo.map(function (g) {
           return "<tr><td><b>" + esc(g.nome) + "</b></td><td>" + numero(g.clientes) + "</td><td>" + g.pct + "%</td><td>" + numero(g.os) +
             '</td><td class="dir">' + moeda(g.valor) + "</td></tr>";
+        }).join("") + "</table></div>"
+      : vazio()));
+
+  const totalNovosSexo = (r.sexo || []).reduce(function (a, g) { return a + g.novos; }, 0);
+  cartoes.push(cartao("Novos clientes por sexo",
+    "Clientes cujo primeiro Check List foi dentro do período: quantidade, % do total de novos e % de cada grupo que é novo.",
+    totalNovosSexo
+      ? rosca(r.sexo.filter(function (g) { return g.novos > 0; }).map(function (g) {
+          return { nome: g.nome, qtd: g.novos, pct: g.pct_novos, cor: COR_SEXO[g.nome] || "#8B98AC" };
+        }), numero(totalNovosSexo), "novos") +
+        '<div class="dash-rolagem"><table class="dash-tabela centralizada"><tr><th>Grupo</th><th>Novos</th><th>% dos novos</th><th>% do grupo</th></tr>' +
+        r.sexo.map(function (g) {
+          return "<tr><td><b>" + esc(g.nome) + "</b></td><td>" + numero(g.novos) + "</td><td>" + g.pct_novos + "%</td><td>" + g.pct_novos_grupo + "%</td></tr>";
         }).join("") + "</table></div>"
       : vazio()));
 

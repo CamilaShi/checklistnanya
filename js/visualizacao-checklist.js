@@ -264,6 +264,7 @@ function preencherVisualizacao(dados) {
   if (secaoVerso) secaoVerso.classList.add("oculto");
   prepararBotaoVerso(dados.os.id_os);
   prepararBotaoExcluir(dados.os.id_os);
+  prepararBotoesEdicao(dados.os);
   prepararBotaoLinkWhatsApp(dados.os.id_os);
   if (typeof prepararSecaoExecucaoMidia === "function") {
     prepararSecaoExecucaoMidia(dados.os.id_os, os.status);
@@ -279,12 +280,72 @@ function preencherVisualizacao(dados) {
 // também controla quem vê o item "Excluídos" no menu (excluidos.js).
 // ---------------------------------------------------------------
 
-const EMAILS_PERMITIDOS_EXCLUIR_CHECKLIST = ["noborub@nanya.com.br", "camila@nanya.com.br"];
-
 function podeExcluirChecklist() {
+  return typeof podeFazer === "function" && podeFazer("excluir_checklist");
+}
+
+// ---------------------------------------------------------------
+// Editar Check List (Parte 1) e Liberar pra Oficina corrigir.
+// Admin/Coordenador editam sempre (permissão "editar_parte1");
+// a Oficina só enquanto estiver liberada, e a liberação vale uma vez.
+// Os botões são criados aqui, ao lado do "Excluir".
+// ---------------------------------------------------------------
+
+function prepararBotoesEdicao(os) {
+  const ref = document.getElementById("botao-excluir-checklist");
+  if (!ref) return;
   const usuario = typeof usuarioLogado === "function" ? usuarioLogado() : null;
-  if (!usuario || !usuario.email) return false;
-  return EMAILS_PERMITIDOS_EXCLUIR_CHECKLIST.indexOf(String(usuario.email).trim().toLowerCase()) !== -1;
+  const liberada = !!os.liberada_oficina;
+
+  function garantir(id, texto) {
+    let b = document.getElementById(id);
+    if (!b) {
+      b = document.createElement("button");
+      b.type = "button";
+      b.id = id;
+      b.className = "botao-secundario";
+      b.style.cssText = "margin-bottom:12px;margin-left:8px;";
+      b.textContent = texto;
+      ref.parentNode.insertBefore(b, ref);
+    }
+    return b;
+  }
+
+  const podeEditar = podeFazer("editar_parte1") || (usuario && usuario.perfil === "Oficina" && liberada);
+  const botaoEditar = garantir("botao-editar-checklist", "Editar Check List");
+  botaoEditar.style.display = podeEditar ? "" : "none";
+  botaoEditar.onclick = function () {
+    window.location.href = "editar-checklist.html?os=" + encodeURIComponent(os.id_os);
+  };
+
+  const botaoLiberar = garantir("botao-liberar-oficina", "Liberar para a Oficina corrigir");
+  if (liberada) {
+    botaoLiberar.textContent = "Liberado para a Oficina";
+    botaoLiberar.disabled = true;
+    botaoLiberar.style.display = podeFazer("liberar_oficina") ? "" : "none";
+    botaoLiberar.onclick = null;
+    return;
+  }
+  botaoLiberar.textContent = "Liberar para a Oficina corrigir";
+  botaoLiberar.disabled = false;
+  botaoLiberar.style.display = podeFazer("liberar_oficina") ? "" : "none";
+  botaoLiberar.onclick = async function () {
+    if (!confirm("Liberar este Check List para a Oficina corrigir? A liberação vale uma vez: ao salvar, trava de novo.")) return;
+    botaoLiberar.disabled = true;
+    try {
+      const r = await chamarApi({ acao: "liberarChecklistOficina", id_os: os.id_os });
+      if (r.sucesso) {
+        os.liberada_oficina = true;
+        botaoLiberar.textContent = "Liberado para a Oficina";
+      } else {
+        alert(r.mensagem || "Não foi possível liberar.");
+        botaoLiberar.disabled = false;
+      }
+    } catch (e) {
+      alert("Não foi possível liberar agora.");
+      botaoLiberar.disabled = false;
+    }
+  };
 }
 
 function prepararBotaoExcluir(idOS) {

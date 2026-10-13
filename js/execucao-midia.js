@@ -26,7 +26,7 @@ function prepararSecaoExecucaoMidia(idOS, status) {
 
   execucaoMidiaIdOS = idOS;
 
-  if (status !== "Em Execucao") {
+  if (status !== "Em Execucao" || !podeFazer("fotos_execucao")) {
     secao.classList.add("oculto");
     return;
   }

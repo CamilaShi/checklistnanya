@@ -5,8 +5,8 @@ if (usuario) {
   document.getElementById("nome-usuario").textContent = usuario.nome;
   document.getElementById("perfil-usuario").textContent = usuario.perfil;
 
-  if (usuario.perfil !== "Admin" && usuario.perfil !== "Coordenador") {
-    // Essa tela é só pra Admin e Coordenador — quem não é, volta pra Central.
+  if (!podeFazer("gerenciar_usuarios")) {
+    // Quem não tem a permissão "gerenciar usuários" volta pra Central.
     window.location.href = "home.html";
   } else {
     if (usuario.perfil === "Coordenador") {
@@ -15,6 +15,7 @@ if (usuario) {
       if (opcaoAdmin) opcaoAdmin.remove();
     }
     carregarUsuarios();
+    if (usuario.perfil === "Admin") montarTelaPermissoes();
   }
 }
 
@@ -277,4 +278,79 @@ async function alterarPerfil(idUsuario, novoPerfil) {
     avisarListaUsuarios("Não foi possível alterar o perfil agora.", true);
     carregarUsuarios();
   }
+}
+
+
+// ---------------------------------------------------------------------------
+// Permissões por perfil (só Admin) — matriz ação x perfil, aplicada no servidor.
+// ---------------------------------------------------------------------------
+async function montarTelaPermissoes() {
+  const ancora = document.querySelector("fieldset.grupo-cadastro");
+  if (!ancora || document.getElementById("grupo-permissoes")) return;
+
+  const caixa = document.createElement("fieldset");
+  caixa.className = "grupo-cadastro";
+  caixa.id = "grupo-permissoes";
+  caixa.innerHTML =
+    "<legend>Permissões por perfil</legend>" +
+    '<p class="texto-ajuda">Marque o que cada perfil pode fazer. O Admin sempre pode tudo. ' +
+    "As regras valem no servidor, não só nos botões.</p>" +
+    '<div id="matriz-permissoes" style="overflow-x:auto"><p>Carregando…</p></div>' +
+    '<button type="button" id="botao-salvar-permissoes" class="botao-primario" style="width:auto;padding:8px 24px;margin-top:10px">Salvar permissões</button>';
+  ancora.parentNode.insertBefore(caixa, ancora);
+
+  let dados;
+  try {
+    const resposta = await chamarApi({ acao: "listarPermissoes" });
+    if (!resposta.sucesso) throw new Error(resposta.mensagem || "erro");
+    dados = resposta;
+  } catch (erro) {
+    document.getElementById("matriz-permissoes").textContent = "Não foi possível carregar as permissões.";
+    return;
+  }
+
+  const perfis = dados.perfis;
+  let html = '<table class="tabela-permissoes" style="border-collapse:collapse;width:100%;min-width:480px"><thead><tr><th style="text-align:left;padding:6px">Ação</th>';
+  perfis.forEach(function (p) { html += '<th style="padding:6px;text-align:center">' + p + "</th>"; });
+  html += "</tr></thead><tbody>";
+  let grupoAtual = null;
+  dados.acoes.forEach(function (a) {
+    if (a.grupo !== grupoAtual) {
+      grupoAtual = a.grupo;
+      html += '<tr><td colspan="' + (perfis.length + 1) + '" style="padding:8px 6px 2px;font-weight:700;border-top:1px solid #ddd">' + grupoAtual + "</td></tr>";
+    }
+    html += '<tr><td style="padding:4px 6px">' + a.rotulo + "</td>";
+    perfis.forEach(function (p) {
+      const marcado = p === "Admin" ? true : !!(dados.matriz[a.chave] && dados.matriz[a.chave][p]);
+      html += '<td style="text-align:center"><input type="checkbox" data-acao="' + a.chave + '" data-perfil="' + p + '"' +
+        (marcado ? " checked" : "") + (p === "Admin" ? " disabled" : "") + "></td>";
+    });
+    html += "</tr>";
+  });
+  html += "</tbody></table>";
+  document.getElementById("matriz-permissoes").innerHTML = html;
+
+  document.getElementById("botao-salvar-permissoes").addEventListener("click", async function () {
+    const botao = this;
+    const matriz = {};
+    document.querySelectorAll("#matriz-permissoes input[type=checkbox]").forEach(function (c) {
+      const a = c.dataset.acao;
+      matriz[a] = matriz[a] || {};
+      matriz[a][c.dataset.perfil] = c.checked;
+    });
+    botao.disabled = true;
+    try {
+      const r = await chamarApi({ acao: "salvarPermissoes", matriz: matriz });
+      if (r.sucesso) {
+        try { sessionStorage.removeItem("permissoes"); } catch (e) {}
+        avisarListaUsuarios("Salvo: permissões atualizadas.", false);
+      } else {
+        avisarListaUsuarios(r.mensagem || "Não foi possível salvar as permissões.", true);
+      }
+    } catch (erro) {
+      avisarListaUsuarios("Não foi possível salvar as permissões agora.", true);
+    } finally {
+      botao.disabled = false;
+    }
+  });
 }

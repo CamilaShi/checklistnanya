@@ -19,7 +19,78 @@ function exigirLogin() {
     return null;
   }
   aquecerCache();
+  iniciarPermissoes();
   return usuario;
+}
+
+// ---------------------------------------------------------------
+// Permissões por perfil. O servidor é quem manda (aba "Permissoes",
+// tela Configurações > Permissões); aqui só se escondem botões e telas
+// para quem não pode. Enquanto a resposta do servidor não chega, vale
+// o padrão abaixo (o mesmo do servidor).
+// ---------------------------------------------------------------
+const PERMISSOES_PADRAO = {
+  criar_checklist: ["Admin", "Coordenador", "Oficina", "Vendedor"],
+  editar_parte1: ["Admin", "Coordenador"],
+  liberar_oficina: ["Admin", "Coordenador"],
+  mudar_status: ["Admin", "Coordenador", "Vendedor"],
+  editar_verso: ["Admin", "Coordenador", "Vendedor"],
+  fotos_execucao: ["Admin", "Coordenador", "Oficina", "Vendedor"],
+  excluir_checklist: ["Admin"],
+  restaurar_checklist: ["Admin"],
+  cadastrar: ["Admin", "Coordenador", "Oficina", "Vendedor"],
+  ver_dashboard: ["Admin", "Coordenador"],
+  gerenciar_usuarios: ["Admin", "Coordenador"],
+};
+
+function podeFazer(chave) {
+  const usuario = usuarioLogado();
+  if (!usuario) return false;
+  if (usuario.perfil === "Admin") return true;
+  try {
+    const guardado = JSON.parse(sessionStorage.getItem("permissoes") || "null");
+    if (guardado && guardado.perfil === usuario.perfil && guardado.permissoes && chave in guardado.permissoes) {
+      return guardado.permissoes[chave] === true;
+    }
+  } catch (erro) {
+    // sem leitura guardada: usa o padrão
+  }
+  return (PERMISSOES_PADRAO[chave] || []).indexOf(usuario.perfil) !== -1;
+}
+
+// Liga/desliga os itens do menu lateral conforme as permissões.
+function aplicarMenuPorPermissao() {
+  const itens = [
+    ["#menu-dashboard", "ver_dashboard"],
+    ["#menu-configuracoes", "gerenciar_usuarios"],
+    ['.menu-lateral a[href="home.html"]', "criar_checklist"],
+  ];
+  itens.forEach(function (par) {
+    const el = document.querySelector(par[0]);
+    if (el) el.style.display = podeFazer(par[1]) ? "" : "none";
+  });
+}
+
+// Telas podem registrar uma função para rodar quando as permissões
+// (re)chegarem do servidor.
+const aoAtualizarPermissoes = [];
+
+function iniciarPermissoes() {
+  setTimeout(function () {
+    aplicarMenuPorPermissao();
+    aoAtualizarPermissoes.forEach(function (fn) { try { fn(); } catch (erro) { console.error(erro); } });
+  }, 0);
+
+  chamarApiRapido({ acao: "minhasPermissoes" }, function (dados) {
+    if (!dados || !dados.sucesso) return;
+    try {
+      sessionStorage.setItem("permissoes", JSON.stringify({ perfil: dados.perfil, permissoes: dados.permissoes }));
+    } catch (erro) {
+      // sem armazenamento: segue com o padrão
+    }
+    aplicarMenuPorPermissao();
+    aoAtualizarPermissoes.forEach(function (fn) { try { fn(); } catch (erro) { console.error(erro); } });
+  }).catch(function () { /* sem rede: vale o padrão */ });
 }
 
 function sair() {
@@ -27,6 +98,7 @@ function sair() {
   limparCache();
   sessionStorage.removeItem("usuario");
   sessionStorage.removeItem("token");
+  sessionStorage.removeItem("permissoes");
 
   if (token) {
     // Avisa o backend pra encerrar a sessão, mas não espera resposta
