@@ -47,6 +47,7 @@ function podeFazer(chave) {
   const usuario = usuarioLogado();
   if (!usuario) return false;
   if (usuario.perfil === "Admin") return true;
+  if (chave === "editar_verso" && usuario.perfil === "Oficina") return false;
   try {
     const guardado = JSON.parse(sessionStorage.getItem("permissoes") || "null");
     if (guardado && guardado.perfil === usuario.perfil && guardado.permissoes && chave in guardado.permissoes) {

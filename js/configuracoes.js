@@ -321,9 +321,9 @@ async function montarTelaPermissoes() {
     }
     html += '<tr><td style="padding:4px 6px">' + a.rotulo + "</td>";
     perfis.forEach(function (p) {
-      const marcado = p === "Admin" ? true : !!(dados.matriz[a.chave] && dados.matriz[a.chave][p]);
+      const marcado = a.chave === "editar_verso" && p === "Oficina" ? false : p === "Admin" ? true : !!(dados.matriz[a.chave] && dados.matriz[a.chave][p]);
       html += '<td style="text-align:center"><input type="checkbox" data-acao="' + a.chave + '" data-perfil="' + p + '"' +
-        (marcado ? " checked" : "") + (p === "Admin" ? " disabled" : "") + "></td>";
+        (marcado ? " checked" : "") + (p === "Admin" || (a.chave === "editar_verso" && p === "Oficina") ? " disabled" : "") + "></td>";
     });
     html += "</tr>";
   });
