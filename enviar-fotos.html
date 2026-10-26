@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enviar fotos — Checklist Oficina Nanya</title>
+  <link rel="icon" type="image/png" href="assets/logo-nanya.png" />
+  <link rel="stylesheet" href="css/estilo.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="menu-lateral">
+      <div class="marca-menu">NANYA</div>
+      <nav>
+        <a href="home.html">Criar Check List</a>
+        <a href="acompanhamento.html">Status</a>
+        <a href="visualizar-checklist.html">Visualizar</a>
+        <a href="cadastros.html">Cadastro</a>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Dashboard</button>
+        <button class="item-menu" onclick="itemEmConstrucao(event)">Relatórios</button>
+        <a href="historico.html">Histórico</a>
+        <a href="configuracoes.html" id="menu-configuracoes">Configurações</a>
+      </nav>
+    </aside>
+
+    <div class="conteudo">
+      <header class="topo">
+        <h1>Enviar fotos da Parte 1</h1>
+        <div class="acoes-topo">
+          <div class="usuario-logado">
+            <div><strong id="nome-usuario"></strong> · <span id="perfil-usuario"></span></div>
+          </div>
+          <button type="button" class="botao-primario botao-topo botao-secundario-topo" onclick="abrirModalSenha()">Alterar senha</button>
+          <button type="button" class="botao-primario botao-topo" onclick="sair()">Sair</button>
+        </div>
+      </header>
+
+      <main class="corpo">
+        <fieldset class="grupo-cadastro">
+          <legend id="titulo-os">Fotos da vistoria</legend>
+          <p id="resumo-os">Carregando…</p>
+          <div id="lista-lados"></div>
+        </fieldset>
+        <fieldset class="grupo-cadastro">
+          <legend>Outras fotos (opcional)</legend>
+          <input type="file" id="input-extras" accept="image/*" multiple />
+          <p class="aviso" id="contagem-extras"></p>
+        </fieldset>
+        <div class="caixa-salvar">
+          <div class="mensagem-inline" id="mensagem-fotos"></div>
+          <div class="barra-acoes">
+            <button type="button" class="botao-primario" id="botao-enviar-fotos">Enviar fotos</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="js/config.js"></script>
+  <script src="js/sessao.js"></script>
+  <script src="js/enviar-fotos.js"></script>
+</body>
+</html>
