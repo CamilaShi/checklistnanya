@@ -9,7 +9,84 @@ if (usuario) {
     const itemDashboard = document.getElementById("menu-dashboard");
     if (itemDashboard) itemDashboard.style.display = "none";
   }
+  prepararCampoPlaca();
+  prepararExclusividadeCliente();
   carregarDropdownClientes();
+}
+
+// CPF/CNPJ e "Cliente já cadastrado" são duas formas de achar o mesmo
+// cliente: usar uma desabilita a outra, e a tela avisa.
+function prepararExclusividadeCliente() {
+  const campoDoc = document.getElementById("busca-documento");
+  const selectCliente = document.getElementById("busca-nome-cliente");
+  const mensagem = document.getElementById("mensagem-busca");
+
+  function avisar(texto) {
+    mensagem.textContent = texto;
+    mensagem.className = "mensagem-inline";
+  }
+
+  campoDoc.addEventListener("input", function () {
+    if (campoDoc.value.trim()) {
+      selectCliente.value = "";
+      selectCliente.disabled = true;
+      avisar("Buscando por CPF/CNPJ: a lista de clientes foi desabilitada. Apague o CPF/CNPJ para escolher um cliente.");
+    } else {
+      selectCliente.disabled = false;
+      avisar("");
+    }
+  });
+
+  selectCliente.addEventListener("change", function () {
+    if (selectCliente.value) {
+      campoDoc.value = "";
+      campoDoc.disabled = true;
+      avisar("Cliente escolhido na lista: o campo CPF/CNPJ foi desabilitado. Volte para \"Selecione...\" para digitar um CPF/CNPJ.");
+    } else {
+      campoDoc.disabled = false;
+      avisar("");
+    }
+  });
+}
+
+function normalizarPlaca(texto) {
+  return String(texto || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+// A Placa vira um campo de digitar com sugestões (digita ou escolhe na
+// lista). As sugestões vêm dos Check Lists existentes e, ao escolher um
+// cliente, dos veículos dele.
+function prepararCampoPlaca() {
+  const antigo = document.getElementById("busca-placa");
+  if (!antigo || antigo.tagName !== "SELECT") return;
+  const campo = document.createElement("input");
+  campo.type = "text";
+  campo.id = "busca-placa";
+  campo.placeholder = "Digite ou escolha";
+  campo.maxLength = 8;
+  campo.autocomplete = "off";
+  campo.setAttribute("list", "lista-placas");
+  campo.style.textTransform = "uppercase";
+  const lista = document.createElement("datalist");
+  lista.id = "lista-placas";
+  antigo.parentNode.replaceChild(campo, antigo);
+  campo.parentNode.appendChild(lista);
+
+  chamarApiRapido({ acao: "listarOSAtivas" }, function (resposta) {
+    if (!resposta || !resposta.sucesso || !resposta.os) return;
+    if (document.getElementById("busca-nome-cliente").value) return;
+    const vistas = {};
+    lista.innerHTML = "";
+    resposta.os.forEach(function (os) {
+      const placa = os.veiculo_placa;
+      if (!placa || vistas[placa]) return;
+      vistas[placa] = true;
+      const opcao = document.createElement("option");
+      opcao.value = placa;
+      opcao.label = (os.veiculo_texto || "") + " — " + (os.cliente_nome || "");
+      lista.appendChild(opcao);
+    });
+  }).catch(function () {});
 }
 
 async function carregarDropdownClientes() {
@@ -36,8 +113,10 @@ async function carregarDropdownClientes() {
 // mostrar só os veículos dele — mais rápido do que digitar a placa.
 document.getElementById("busca-nome-cliente").addEventListener("change", async function () {
   const idCliente = this.value;
-  const selectPlaca = document.getElementById("busca-placa");
-  selectPlaca.innerHTML = '<option value="">Todas</option>';
+  const campoPlaca = document.getElementById("busca-placa");
+  const listaPlacas = document.getElementById("lista-placas");
+  campoPlaca.value = "";
+  if (listaPlacas) listaPlacas.innerHTML = "";
 
   if (!idCliente) return;
 
@@ -47,8 +126,8 @@ document.getElementById("busca-nome-cliente").addEventListener("change", async f
       resposta.veiculos.forEach(function (veiculo) {
         const opcao = document.createElement("option");
         opcao.value = veiculo.placa;
-        opcao.textContent = veiculo.placa + " — " + veiculo.marca + " " + veiculo.modelo;
-        selectPlaca.appendChild(opcao);
+        opcao.label = veiculo.marca + " " + veiculo.modelo;
+        if (listaPlacas) listaPlacas.appendChild(opcao);
       });
     }
   } catch (erro) {
@@ -65,7 +144,7 @@ document.getElementById("busca-nome-cliente").addEventListener("change", async f
 document.getElementById("botao-buscar-cliente").addEventListener("click", async function () {
   const idClienteSelecionado = document.getElementById("busca-nome-cliente").value;
   const documento = document.getElementById("busca-documento").value.trim();
-  const placaSelecionada = document.getElementById("busca-placa").value;
+  const placaSelecionada = normalizarPlaca(document.getElementById("busca-placa").value);
   const mensagem = document.getElementById("mensagem-busca");
   mensagem.textContent = "";
   mensagem.className = "mensagem-inline";
@@ -85,7 +164,13 @@ document.getElementById("botao-buscar-cliente").addEventListener("click", async 
     if (idClienteSelecionado) {
       idCliente = idClienteSelecionado;
     } else if (documento) {
-      const respostaCliente = await chamarApi({ acao: "buscarClienteLocal", documento: documento });
+      let respostaCliente = await chamarApi({ acao: "buscarClienteLocal", documento: documento });
+      // CPF que começa com zero pode ter sido gravado sem o zero na
+      // planilha: tenta de novo sem os zeros da frente.
+      const digitos = documento.replace(/\D/g, "");
+      if (!respostaCliente.sucesso && /^0/.test(digitos)) {
+        respostaCliente = await chamarApi({ acao: "buscarClienteLocal", documento: digitos.replace(/^0+/, "") });
+      }
       if (!respostaCliente.sucesso) {
         mensagem.textContent = "Cliente não encontrado no cadastro.";
         mensagem.classList.add("erro");
@@ -116,10 +201,13 @@ document.getElementById("botao-buscar-cliente").addEventListener("click", async 
     // Se a busca foi por uma placa específica (não "Todas"), filtra
     // também pelo veículo, não só pelo cliente.
     if (placaSelecionada) {
-      resultado = resultado.filter(function (os) { return os.veiculo_placa === placaSelecionada; });
+      resultado = resultado.filter(function (os) { return normalizarPlaca(os.veiculo_placa) === placaSelecionada; });
     }
 
     renderizarResultado(resultado);
+    if (!resultado.length && documento && !idClienteSelecionado) {
+      mensagem.textContent = "Cliente encontrado, mas sem Check Lists ativos para esse filtro.";
+    }
     document.getElementById("secao-resultado").classList.remove("oculto");
   } catch (erro) {
     mensagem.textContent = "Não foi possível buscar agora.";
